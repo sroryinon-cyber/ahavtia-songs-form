@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#120D17">
+<title>אהבתיה | בחירת שירים לחתונה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&display=swap">
+<style>
+/* ===== אהבתיה - טופס בחירת שירים ===== */
+:root{
+  --ink:#C2365F; --txt:#17111D; --sub:#5E5666; --lbl:#3A3340; --line:#E9E1DB; --card-line:#EEE7E2;
+  --bg:#F7F4F2; --night:#120D17;
+  --grad:linear-gradient(120deg,#EE6A2C 0%,#C23FA0 100%);
+  --brand-grad:linear-gradient(135deg,#FAD45F 0%,#FA954A 100%);
+  --soft-grad:linear-gradient(120deg,rgba(238,106,44,.12) 0%,rgba(194,63,160,.12) 100%);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:#EFEAE7;font-family:Heebo,system-ui,sans-serif;color:var(--txt);-webkit-font-smoothing:antialiased}
+button,input,textarea{font-family:inherit}
+#app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:radial-gradient(90% 38% at 100% 0%,rgba(250,149,74,.16) 0%,rgba(250,149,74,0) 70%),radial-gradient(80% 32% at 0% 0%,rgba(194,63,160,.10) 0%,rgba(194,63,160,0) 70%),var(--bg)}
+.f-in{width:100%;height:54px;border:1.5px solid var(--line);border-radius:16px;padding:0 16px;font-size:17px;color:var(--txt);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s}
+.f-in:focus{border-color:#E8456A;box-shadow:0 0 0 4px rgba(232,69,106,.14)}
+.f-in::placeholder{color:#7A7282}
+.f-in.err{border-color:#C2365F}
+textarea.f-in{height:130px;padding:14px 16px;resize:none;line-height:1.5}
+input[type=tel].f-in{direction:ltr;text-align:right}
+.field{display:flex;flex-direction:column;gap:8px;font-size:15px;font-weight:500;color:var(--lbl)}
+.req::after{content:" *";color:var(--ink)}
+.tap{cursor:pointer;-webkit-tap-highlight-color:transparent;border:0;transition:transform .12s ease,box-shadow .2s ease,background .2s ease}
+.tap:active{transform:scale(.98)}
+.tap:focus-visible{outline:3px solid rgba(194,54,95,.55);outline-offset:2px}
+.tap:disabled{cursor:default}
+.tap:disabled:active{transform:none}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.screen{animation:rise .35s ease-out}
+h1,h2{margin:0;font-weight:800;letter-spacing:-.5px}
+h2{font-size:29px;line-height:1.2}
+p{margin:0}
+.lead{font-size:16px;line-height:1.55;color:var(--sub)}
+.stack{display:flex;flex-direction:column}
+.card{border-radius:22px;background:#fff;border:1px solid var(--card-line);box-shadow:0 10px 30px rgba(23,17,29,.05);padding:18px;display:flex;flex-direction:column;gap:14px}
+.card-title{font-size:17px;font-weight:700}
+.hint{font-size:14px;color:var(--sub)}
+.opt{border:2px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(#E9E1DB,#E9E1DB) border-box;box-shadow:0 1px 2px rgba(23,17,29,.04);color:var(--txt)}
+.opt.on{background:linear-gradient(#FFF5F2,#FFF5F2) padding-box,var(--grad) border-box;box-shadow:0 10px 28px rgba(232,69,106,.18);color:var(--ink)}
+.pill{border-width:1.5px;border-radius:22px;min-height:44px;padding:6px 15px;font-size:15px;font-weight:500}
+.ring{width:22px;height:22px;flex:none;border-radius:50%;border:2px solid #B4ABBA;display:flex;align-items:center;justify-content:center}
+.on .ring{border-color:transparent;background:var(--grad)}
+.on .ring::after{content:"";width:8px;height:8px;border-radius:50%;background:#fff}
+.icon{display:flex;align-items:center;justify-content:center;background:#F5EFEB;color:var(--ink)}
+.on .icon{background:var(--grad);color:#fff}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.footer{position:sticky;bottom:0;padding:12px 20px calc(18px + env(safe-area-inset-bottom));border-top:1px solid rgba(23,17,29,.06);background:rgba(247,244,242,.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.btn-main{width:100%;height:58px;border-radius:29px;font-size:19px;font-weight:700;color:#fff;background:var(--grad);box-shadow:0 12px 30px rgba(232,69,106,.35)}
+.btn-main:disabled{background:#E7E1E4;color:#857C8C;box-shadow:none}
+.missing{font-size:13px;color:var(--sub);text-align:center;margin-top:8px;min-height:18px}
+.link-btn{align-self:flex-start;height:44px;padding:0 4px;background:transparent;color:var(--ink);font-size:16px;font-weight:700;text-decoration:underline;text-underline-offset:4px}
+.toggle-track{width:52px;height:32px;flex:none;border-radius:16px;background:#DDD5DB;display:flex;align-items:center;justify-content:flex-start;padding:0 4px;transition:background .2s}
+.toggle-track.on{background:var(--grad);justify-content:flex-end}
+.toggle-track span{width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(23,17,29,.2)}
+.welcome,.done{flex:1;position:relative;display:flex;flex-direction:column;color:#fff;background-color:var(--night);background-size:cover;background-position:center top;min-height:100vh;min-height:100dvh}
+.welcome .shade,.done .shade{position:absolute;inset:0;pointer-events:none}
+.welcome .inner{position:relative;flex:1;display:flex;flex-direction:column;padding:52px 28px calc(32px + env(safe-area-inset-bottom))}
+.err-box{border-radius:16px;background:#FDECEF;border:1px solid #F3B6C4;color:#7A1730;padding:12px 14px;font-size:15px;line-height:1.5}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+__BG_CSS__
+</style>
+</head>
+<body>
+<div id="app" aria-live="polite"></div>
+<noscript><p style="padding:24px;font-size:17px">כדי למלא את הטופס צריך לאפשר JavaScript בדפדפן.</p></noscript>
+<script>
+(function(){
+'use strict';
+
+/* ================= הגדרות ================= */
+// כתובת ה-Webhook של התרחיש החדש ב-Make
+var WEBHOOK_URL = '__WEBHOOK_URL__';
+// false = מצב תצוגה: לחיצה על "שליחה" לא שולחת כלום. להעביר ל-true רק בשלב הבדיקות.
+var LIVE = false;
+
+// זמרים: המפתח הוא מה שמופיע בקישור (?singer=...)
+// name - השם שיוצג לזוג. bg - איזו תמונת רקע להציג (מתוך התמונות שבקובץ).
+// זמר שלא מופיע כאן (או קישור בלי זמר) = תמונת הרחבה הכללית
+var SINGERS = {
+  shalev: { name: 'שליו', bg: 'bg-shalev' },
+  ido:    { name: 'עידו', bg: 'bg-ido' },
+  yehonatan: { name: 'יהונתן', bg: 'bg-yehonatan' }
+};
+var DEFAULT_BG = 'bg-general';
+
+/* ================= נתונים ================= */
+var NONE = 'ללא שיר בחלק הזה';
+var STEPS = ['welcome','who','names','package','event','team','phones','veil','bracha','entrance','glass','ending','personal','summary','done'];
+var CH = [
+  {label:'היכרות', steps:['who','names','package']},
+  {label:'האירוע', steps:['event']},
+  {label:'אנשי קשר', steps:['team','phones']},
+  {label:'החופה', steps:['veil','bracha','entrance','glass','ending']},
+  {label:'סיום', steps:['personal','summary']}
+];
+var MOMENTS = ['veil','bracha','entrance','glass','ending'];
+var SONGS = {
+  veil:['אהבת עולם','משכן','אקדם את פניך','לב לבן','מודה אני - מאיר אריאל','ניגון ברדיצ׳ב','יהי שלום','ניגון הבעל שם טוב','תפילת כלה - שוואקי','מהרה - שוואקי','שמח תשמח - שוואקי','בואי בשלום - שוואקי','ממעמקים - עידן רייכל','הינך יפה - עידן רייכל','התנערי - בן סנוף','יפה כלבנה - אביתר בנאי','עכשיו הלב פתוח - בניה ברבי','עכשיו התור לאהבה','אהבה ממבט ראשון','דודי ירד לגנו','אבל את - בנאי','משום - אביהו פנחסוב'],
+  bracha:['אחותנו','ניגון ברדיצ׳ב','התנערי - קרליבך','יהי שלום','תפילת כלה - שוואקי','ניגון הבעל שם טוב','ויהי נועם','ניגון לבניה - עלמא','מזמור לתודה - עקיבא','משכן - ביני לנדאו','אהבת עולם','השבעתי אתכם','תתן אחרית לעמך','שערי שמיים פתח'],
+  entrance:['בואי בשלום - שוואקי','עוד ישמע - ישי ריבו (אקוסטי)','לב לבן','אקדם את פניך','אהבת עולם','ניגון ארבע בבות','משכן - ביני לנדאו','ניגון ברדיצ׳ב','יהי שלום','ניגון הבעל שם טוב','מודה אני','ממעמקים - עידן רייכל','תפילת כלה - שוואקי','הינך יפה - עידן רייכל','התנערי - בן סנוף','יפה כלבנה - אביתר בנאי','עכשיו התור לאהבה','בראשית עולם - שלומי שבת','דודי ירד לגנו','עכשיו הלב פתוח - בניה ברבי','אני לא מפסיק להתרגש ממך','אהבה ממבט ראשון','שלווה בארמונותייך - רביד','אבל את - בנאי','מלוך על כל העולם כולו - ישי ריבו','את ואני - שלמה ארצי','מתחת לשמיים - דויד ברוזה','צעדים - עקיבא','בראשית - שולי רנד','אשת חיל - שוואקי','פשוטים - עקיבא','יא מחיג׳ה - האחים קפאח','להינשא הלילה','אהבת חיי - עידן עמדי','אילו פינו - עלמא','אהיה לך בית - רותם כהן','מזמור לתודה - עקיבא','מהרה - שוואקי','והיו למשיסה - עמיחי פלסר','ראיתי בית - עלמא','ניגון לכה דודי - ישיבת עתניאל','אור החיים - ישי ריבו','תפילות - עומרי סבח','ידיד נפש - אביאל סולטן','שערי שמיים פתח','אהבה כזו - עידן רייכל וזהבה בן'],
+  glass:['אם אשכחך - שוואקי','אם אשכחך - קרליבך','תתן אחרית לעמך','תתן אחרית לעמך + אם אשכחך (קרליבך)','תתן אחרית לעמך + אם אשכחך (שוואקי)','שערי שמיים פתח','ממקומך - קרליבך','ממקומך - יונתן רזאל','יבנה המקדש - ביני לנדאו','קריה יפיפיה','והראנו','ציון - בוצר',NONE],
+  ending:['עד בלי די (והריקותי)','מהרה מהרה','ישיש עלייך','בורא עולם','ישמח חתני','שמחה גדולה הלילה','עוד ישמע - ישי ריבו']
+};
+var IDEAS = ['ויהי נועם','שיר של יום חולין','אור החיים - ישי ריבו','אשת חיל - איתן כץ','ידיד נפש - אביאל סולטן','הדור נאה - עמיחי פלסר','ניגון לבניה','תן לי תפילה - שמואל','מזמור לתודה - עקיבא','בראשית - שולי רנד','להינשא הלילה','מודה אני - בניה ברבי','ניגון ארבע בבות','עוד ישמע - ישי ריבו (אקוסטי)','לא יפריד דבר בינינו','יש לי אור - בוצר','להביע אהבה - ישי ריבו','בואי בשלום - בן סנוף','אוחילה - ישי ריבו'];
+var PKG = {band:'להקה לאורך הערב', chuppah:'כיסא כלה חופה בלבד'};
+
+/* ================= פרמטרים מהקישור ================= */
+var q = new URLSearchParams(location.search);
+function qp(k){ return (q.get(k) || '').trim(); }
+function toIsoDate(s){ // DD/MM/YYYY -> YYYY-MM-DD
+  var m = /^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})$/.exec(s || '');
+  if (!m) return /^\d{4}-\d{2}-\d{2}$/.test(s || '') ? s : '';
+  return m[3] + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[1]).slice(-2);
+}
+var singerKey = qp('singer').toLowerCase();
+var singer = SINGERS[singerKey] || null;
+var BG = singer ? singer.bg : DEFAULT_BG;
+var eventRecordId = qp('eventRecordId').replace(/[^A-Za-z0-9]/g, '');
+
+/* ================= מצב ================= */
+var S = {
+  step:0, who:'', bride:qp('bride_name'), groom:qp('groom_name'), pkg:'',
+  date:toIsoDate(qp('date')), venue:qp('hall'), guests:'', reception:'18:30', chuppah:'19:30',
+  escort:'', escortPhone:'', gEscort:'', gEscortPhone:'', hasProd:false, prod:'', prodPhone:'', dj:'', djPhone:'',
+  bridePhone:'', groomPhone:'', payer:'', payName:'', payPhone:'',
+  songs:{veil:'',bracha:'',entrance:'',glass:'',ending:''},
+  other:{veil:'',bracha:'',entrance:'',glass:'',ending:''},
+  pause:'', yichud:'', notes:'', howMet:'', ideas:[], heard:'',
+  showAll:false, query:'', sending:false, error:'', triedNext:false
+};
+var submissionId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
+
+/* ================= עזרים ================= */
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function t(s){ return (s || '').trim(); }
+function B(){ return t(S.bride) || 'הכלה'; }
+function G(){ return t(S.groom) || 'החתן'; }
+function phoneOk(p){
+  var d = (p || '').replace(/\D/g, '');
+  if (d.indexOf('972') === 0) d = '0' + d.slice(3);
+  return /^0(5\d{8}|[2-489]\d{7}|7\d{8})$/.test(d);
+}
+function curStep(){ return STEPS[S.step]; }
+
+function go(i){
+  S.step = i; S.showAll = false; S.query = ''; S.triedNext = false; S.error = '';
+  render(); window.scrollTo(0, 0);
+}
+
+/* ================= בדיקת שלב ================= */
+function missing(step){
+  var m = [];
+  if (step === 'who' && !S.who) m.push('מי ממלא');
+  if (step === 'names'){ if (!t(S.bride)) m.push('שם הכלה'); if (!t(S.groom)) m.push('שם החתן'); }
+  if (step === 'package' && !S.pkg) m.push('סוג החבילה');
+  if (step === 'event'){
+    if (!S.date) m.push('תאריך'); if (!t(S.venue)) m.push('אולם');
+    if (!S.reception) m.push('שעת קבלת פנים'); if (!S.chuppah) m.push('שעת חופה');
+  }
+  if (step === 'team'){
+    if (t(S.escortPhone) && !phoneOk(S.escortPhone)) m.push('טלפון המלווה של ' + B());
+    if (t(S.gEscortPhone) && !phoneOk(S.gEscortPhone)) m.push('טלפון המלווה של ' + G());
+    if (S.hasProd && t(S.prodPhone) && !phoneOk(S.prodPhone)) m.push('טלפון המפיק');
+    if (t(S.djPhone) && !phoneOk(S.djPhone)) m.push('טלפון הדי־ג׳יי');
+  }
+  if (step === 'phones'){
+    if (!phoneOk(S.bridePhone)) m.push('הטלפון של ' + B());
+    if (!phoneOk(S.groomPhone)) m.push('הטלפון של ' + G());
+    if (!S.payer) m.push('איש קשר לתשלום');
+    if (S.payer === 'other'){ if (!t(S.payName)) m.push('שם איש הקשר לתשלום'); if (!phoneOk(S.payPhone)) m.push('הטלפון שלו'); }
+  }
+  if (MOMENTS.indexOf(step) >= 0){
+    var sel = S.songs[step];
+    if (!sel || (sel === '__other' && !t(S.other[step]))) m.push('שיר');
+  }
+  return m;
+}
+
+/* ================= רכיבים ================= */
+var ICONS = {
+  back:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>',
+  groom:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l7 5-7 5z"/><path d="M21 7l-7 5 7 5z"/><rect x="10" y="10" width="4" height="4" rx="1"/></svg>',
+  bride:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="15" r="6"/><path d="M9 4h6l-3 4.5z"/></svg>',
+  band:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+  chuppah:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9c3-4.5 15-4.5 18 0z"/><path d="M5 9v11"/><path d="M19 9v11"/></svg>',
+  search:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
+  check:'<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
+};
+
+function field(label, key, opts){
+  opts = opts || {};
+  var type = opts.type || 'text';
+  var val = S[key];
+  var bad = S.triedNext && opts.check && !opts.check(val);
+  var attrs = 'class="f-in' + (bad ? ' err' : '') + '" data-field="' + key + '" type="' + type + '"' +
+    (opts.ph ? ' placeholder="' + esc(opts.ph) + '"' : '') +
+    (type === 'tel' ? ' inputmode="tel" autocomplete="tel"' : '') +
+    (type === 'number' ? ' inputmode="numeric" min="0"' : '') +
+    (opts.auto ? ' autocomplete="' + opts.auto + '"' : '');
+  var control = type === 'textarea'
+    ? '<textarea ' + attrs.replace(' type="textarea"', '') + '>' + esc(val) + '</textarea>'
+    : '<input ' + attrs + ' value="' + esc(val) + '">';
+  return '<label class="field"><span' + (opts.req ? ' class="req"' : '') + '>' + esc(label) + '</span>' + control + '</label>';
+}
+function head(title, lead){
+  return '<div class="stack" style="gap:8px"><h2>' + esc(title) + '</h2>' + (lead ? '<p class="lead">' + esc(lead) + '</p>' : '') + '</div>';
+}
+function pills(key, list){
+  return '<div class="chip-row">' + list.map(function(o){
+    var on = S[key] === o.id;
+    return '<button type="button" class="tap opt pill' + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-act="pick" data-key="' + key + '" data-val="' + esc(o.id) + '">' + esc(o.label) + '</button>';
+  }).join('') + '</div>';
+}
+function pills2(key, list){
+  return '<div class="grid2" style="gap:8px">' + list.map(function(o){
+    var on = S[key] === o.id;
+    return '<button type="button" class="tap opt pill' + (on ? ' on' : '') + '" style="border-radius:18px;min-height:54px" aria-pressed="' + on + '" data-act="pick" data-key="' + key + '" data-val="' + esc(o.id) + '">' + esc(o.label) + '</button>';
+  }).join('') + '</div>';
+}
+
+/* ================= מסכים ================= */
+function viewWelcome(){
+  var chips = CH.map(function(c){ return '<span style="height:32px;padding:0 13px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:inline-flex;align-items:center;font-size:14px;color:#EFE7F3">' + c.label + '</span>'; }).join('');
+  var singerLine = '';
+  var hello = (t(S.bride) && t(S.groom)) ? esc(B()) + ' ו' + esc(G()) + ', מזל טוב!' : 'זוג אהוב, מזל טוב!';
+  return '<section class="welcome screen ' + BG + '">' +
+    '<div class="shade" aria-hidden="true" style="background:linear-gradient(180deg,rgba(18,13,23,.6) 0%,rgba(18,13,23,0) 22%,rgba(18,13,23,0) 34%,rgba(18,13,23,.8) 52%,rgba(18,13,23,.96) 66%,#120D17 100%),linear-gradient(160deg,rgba(238,106,44,.18) 0%,rgba(194,63,160,.22) 100%),rgba(18,13,23,.3)"></div>' +
+    '<div class="inner">' +
+      '<div class="stack" style="gap:10px;align-items:center;text-align:center"><img src="__IMG_LOGO__" alt="אהבתיה" style="width:168px;height:auto;display:block"><div style="font-size:15px;color:#D9CFE0">להקה &amp; די־ג׳יי</div></div>' +
+      '<div style="flex:1;min-height:150px"></div>' +
+      '<h1 style="margin:0 0 12px;font-size:34px;line-height:1.15;text-shadow:0 2px 18px rgba(0,0,0,.45)">' + hello + '</h1>' +
+      singerLine +
+      '<p style="margin:0 0 22px;font-size:17px;line-height:1.6;color:#E6DDEC;text-shadow:0 1px 12px rgba(0,0,0,.5)">תודה שבחרתם בנו לשמח אתכם ביום הכי מיוחד שלכם. בכמה שלבים קצרים נכיר אתכם ונבחר יחד את השירים לרגעים הגדולים.</p>' +
+      '<div class="chip-row" style="margin-bottom:26px">' + chips + '</div>' +
+      '<button type="button" class="tap btn-main" data-act="start" style="box-shadow:0 14px 36px rgba(232,69,106,.45)">מתחילים</button>' +
+    '</div></section>';
+}
+
+function viewHeader(){
+  var step = curStep();
+  var mi = MOMENTS.indexOf(step);
+  var ci = -1;
+  CH.forEach(function(c, i){ if (c.steps.indexOf(step) >= 0) ci = i; });
+  var label = mi >= 0 ? 'רגע ' + (mi + 1) + ' מתוך 5' : (ci >= 0 ? 'שלב ' + (ci + 1) + ' מתוך 5' : '');
+  var bars = CH.map(function(c, i){
+    var k = c.steps.indexOf(step);
+    var pct = ci < 0 ? 0 : i < ci ? 100 : i > ci ? 0 : Math.round((k + 1) / c.steps.length * 100);
+    return '<div class="stack" style="gap:6px"><div style="height:6px;border-radius:3px;background:#E9E1DB;overflow:hidden"><div style="height:6px;border-radius:3px;width:' + pct + '%;background:var(--grad);transition:width .3s"></div></div>' +
+      '<div style="font-size:12px;text-align:center;color:' + (i === ci ? 'var(--ink)' : '#6F6777') + ';font-weight:' + (i === ci ? 700 : 500) + '">' + c.label + '</div></div>';
+  }).join('');
+  return '<header style="padding:14px 20px 12px" class="stack">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;height:44px;margin-bottom:12px">' +
+      '<button type="button" class="tap" data-act="back" aria-label="חזרה" style="width:44px;height:44px;border-radius:22px;border:1px solid #EEE7E2;background:#fff;box-shadow:0 2px 8px rgba(23,17,29,.06);display:flex;align-items:center;justify-content:center;color:#17111D;padding:0">' + ICONS.back + '</button>' +
+      '<div style="font-size:15px;font-weight:700;color:#3A3340">' + label + '</div><div style="width:44px"></div></div>' +
+    '<div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px">' + bars + '</div></header>';
+}
+
+function viewWho(){
+  var opts = [{id:'groom',label:'החתן',icon:ICONS.groom},{id:'bride',label:'הכלה',icon:ICONS.bride}];
+  return '<div class="stack screen" style="gap:22px;padding-top:12px">' + head('נעים להכיר! עם מי אנחנו מדברים?', 'ככה נדע איך לפנות אליכם לאורך הדרך.') +
+    '<div class="grid2">' + opts.map(function(o){
+      var on = S.who === o.id;
+      return '<button type="button" class="tap opt' + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-act="who" data-val="' + o.id + '" style="height:164px;border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-size:20px;font-weight:700">' +
+        '<span class="icon" style="width:64px;height:64px;border-radius:50%">' + o.icon + '</span><span style="color:#17111D">' + o.label + '</span></button>';
+    }).join('') + '</div></div>';
+}
+
+function viewNames(){
+  var both = t(S.bride) && t(S.groom);
+  return '<div class="stack screen" style="gap:22px;padding-top:12px">' + head('איך קוראים לכם?') +
+    field('שם הכלה', 'bride', {ph:'שם פרטי', req:true, check:t}) +
+    field('שם החתן', 'groom', {ph:'שם פרטי', req:true, check:t}) +
+    (both ? '<div style="border-radius:22px;background:var(--soft-grad);padding:18px 20px" class="stack"><div style="font-size:21px;font-weight:800">מזל טוב, ' + esc(B()) + ' ו' + esc(G()) + '!</div><div style="font-size:15px;color:#3A3340">איזה כיף שאנחנו חלק מהשמחה שלכם.</div></div>' : '') +
+    '</div>';
+}
+
+function viewPackage(){
+  var opts = [
+    {id:'band', title:'להקה לאורך הערב', sub:'מקבלת הפנים ועד סוף הריקודים', icon:ICONS.band},
+    {id:'chuppah', title:'כיסא כלה וחופה', sub:'הרגעים המרגשים של הטקס', icon:ICONS.chuppah}
+  ];
+  return '<div class="stack screen" style="gap:20px;padding-top:12px">' + head('באיזה חלק של החתונה ננגן?', 'לפי זה נתאים את השאלות הבאות.') +
+    '<div class="stack" style="gap:12px">' + opts.map(function(o){
+      var on = S.pkg === o.id;
+      return '<button type="button" class="tap opt' + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-act="pick" data-key="pkg" data-val="' + o.id + '" style="display:flex;align-items:center;gap:16px;padding:20px 18px;border-radius:24px;text-align:right">' +
+        '<span class="icon" style="width:56px;height:56px;flex:none;border-radius:18px">' + o.icon + '</span>' +
+        '<span class="stack" style="flex:1;gap:4px"><span style="font-size:19px;font-weight:700;color:#17111D">' + o.title + '</span><span style="font-size:15px;color:#5E5666">' + o.sub + '</span></span>' +
+        '<span class="ring" style="width:24px;height:24px"></span></button>';
+    }).join('') + '</div></div>';
+}
+
+function viewEvent(){
+  return '<div class="stack screen" style="gap:20px;padding-top:12px">' + head('ספרו לנו על האירוע', 'כמו שכתוב בהזמנה.') +
+    field('תאריך החתונה', 'date', {type:'date', req:true, check:function(v){ return !!v; }}) +
+    field('שם האולם', 'venue', {ph:'איפה חוגגים?', req:true, check:t}) +
+    field('כמות מוזמנים', 'guests', {type:'number', ph:'בערך'}) +
+    '<div class="grid2">' + field('קבלת פנים', 'reception', {type:'time', req:true, check:function(v){ return !!v; }}) + field('חופה', 'chuppah', {type:'time', req:true, check:function(v){ return !!v; }}) + '</div></div>';
+}
+
+function viewTeam(){
+  var tel = function(v){ return !t(v) || phoneOk(v); };
+  return '<div class="stack screen" style="gap:16px;padding-top:12px">' + head('מי איתנו באירוע?', 'כדי שנוכל לתאם איתם את הרגעים החשובים.') +
+    '<div class="card"><div class="card-title">המלווה של ' + esc(B()) + '</div>' + field('שם', 'escort', {ph:'למשל אחות או חברה קרובה'}) + field('טלפון', 'escortPhone', {type:'tel', ph:'050-000-0000', check:tel}) + '</div>' +
+    '<div class="card"><div class="card-title">המלווה של ' + esc(G()) + '</div>' + field('שם', 'gEscort', {ph:'למשל אח או חבר קרוב'}) + field('טלפון', 'gEscortPhone', {type:'tel', ph:'050-000-0000', check:tel}) + '</div>' +
+    '<button type="button" class="tap card" data-act="toggleProd" aria-pressed="' + S.hasProd + '" style="flex-direction:row;align-items:center;gap:14px;min-height:66px;padding:12px 18px;text-align:right;color:#17111D">' +
+      '<span style="flex:1;font-size:17px;font-weight:700">יש לכם מפיק או מנהל אירוע חיצוני?</span><span class="toggle-track' + (S.hasProd ? ' on' : '') + '"><span></span></span></button>' +
+    (S.hasProd ? '<div class="card screen">' + field('שם המפיק', 'prod') + field('טלפון', 'prodPhone', {type:'tel', ph:'050-000-0000', check:tel}) + '</div>' : '') +
+    '<div class="card"><div class="stack" style="gap:2px"><div class="card-title">די־ג׳יי</div><div class="hint">אם אין, אפשר לדלג</div></div>' + field('שם הדי־ג׳יי', 'dj') +
+      (t(S.dj) ? field('טלפון הדי־ג׳יי', 'djPhone', {type:'tel', ph:'050-000-0000', check:tel}) : '') + '</div></div>';
+}
+
+function viewPhones(){
+  return '<div class="stack screen" style="gap:20px;padding-top:12px">' + head('איך משיגים אתכם?', 'רק למקרה שנצטרך לתאם משהו לפני החתונה.') +
+    field('הטלפון של ' + B(), 'bridePhone', {type:'tel', ph:'050-000-0000', req:true, check:phoneOk}) +
+    field('הטלפון של ' + G(), 'groomPhone', {type:'tel', ph:'050-000-0000', req:true, check:phoneOk}) +
+    '<div class="stack" style="gap:10px"><div class="req" style="font-size:15px;font-weight:500;color:#3A3340">מי איש הקשר לתשלום?</div>' +
+    pills('payer', [{id:'groom',label:G()},{id:'bride',label:B()},{id:'other',label:'מישהו אחר'}]) + '</div>' +
+    (S.payer === 'other' ? '<div class="card screen">' + field('שם', 'payName', {req:true, check:t}) + field('טלפון', 'payPhone', {type:'tel', ph:'050-000-0000', req:true, check:phoneOk}) + '</div>' : '') +
+    '</div>';
+}
+
+var MM = {
+  veil:function(){ return {title:'כיסוי ההינומה', q:'איזה שיר ינוגן כש' + G() + ' מכסה את פני ' + B() + '?', explain:'הרגע השקט והמרגש שלפני החופה. הלהקה מנגנת ברקע.'}; },
+  bracha:function(){ return {title:'ברכת הכלה', q:S.who === 'bride' ? B() + ', איזה שיר ילווה אותך בזמן הברכה?' : 'איזה שיר ילווה את ' + B() + ' בזמן הברכה?', explain:'אחרי כיסוי ההינומה חצי מהלהקה מלווה את ' + G() + ' אל החופה, וחצי נשארת עם ' + B() + ' ומנגנת בזמן שהיא מברכת.'}; },
+  entrance:function(){ return {title:'כניסה לחופה', q:S.who === 'bride' ? B() + ', עם איזה שיר תיכנסי לחופה?' : 'עם איזה שיר ' + B() + ' תיכנס לחופה?', explain:'השיר שילווה את ' + B() + ' בדרך אל החופה.'}; },
+  glass:function(){ return {title:'שבירת הכוס', q:'איזה שיר יתנגן לפני שבירת הכוס?', explain:'בחרו גם אם השיר נעצר לפני הפזמון לרגע השבירה, או מתנגן ברצף.', note:true}; },
+  ending:function(){ return {title:'סיום החופה', q:'ואיך פותחים את השמחה?', explain:'השיר שפורץ מיד אחרי שבירת הכוס.'}; }
+};
+var shownSongs = [];
+
+function viewMoment(step){
+  var mi = MOMENTS.indexOf(step);
+  var m = MM[step]();
+  var all = SONGS[step];
+  var sel = S.songs[step];
+  var list;
+  if (S.showAll){
+    var qq = t(S.query);
+    list = qq ? all.filter(function(n){ return n.indexOf(qq) >= 0; }) : all;
+  } else {
+    list = step === 'glass' ? all.slice(0, 5).concat([NONE]) : all.slice(0, 6);
+    if (sel && sel !== '__other' && list.indexOf(sel) < 0) list = [sel].concat(list);
+  }
+  shownSongs = list;
+  var rows = list.map(function(n, i){
+    var on = sel === n;
+    return '<button type="button" class="tap opt' + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-act="song" data-i="' + i + '" style="display:flex;align-items:center;gap:12px;min-height:58px;border-width:1.5px;border-radius:18px;font-size:16px;text-align:right;padding:0 14px">' +
+      '<span class="ring"></span><span style="flex:1;font-weight:500;color:#17111D">' + esc(n) + '</span></button>';
+  }).join('');
+  var oOn = sel === '__other';
+  var more = all.length - (step === 'glass' ? 6 : 6);
+  return '<div class="stack" style="gap:16px;padding-top:6px">' +
+    '<div style="display:flex;align-items:center;gap:10px"><div style="width:40px;height:40px;border-radius:50%;background:var(--brand-grad);color:#17111D;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px">' + (mi + 1) + '</div><div style="font-size:16px;font-weight:700;color:var(--ink)">' + m.title + '</div></div>' +
+    '<div class="stack" style="gap:8px"><h2 style="font-size:27px;line-height:1.22">' + esc(m.q) + '</h2><p class="lead">' + esc(m.explain) + '</p></div>' +
+    (m.note ? '<div style="border-radius:16px;background:#FFF7DD;border:1px solid #FAD45F;padding:12px 14px;font-size:14px;line-height:1.5;color:#5C4310">חשוב: כל שיר שמתנגן במהלך החופה כדאי לתאם מראש עם הרב, אחרת הוא עלול להתפספס.</div>' : '') +
+    (S.showAll ? '<label style="position:relative;display:block"><span style="position:absolute;right:14px;top:17px;color:#7A7282;display:flex">' + ICONS.search + '</span><input class="f-in" type="search" data-field="query" aria-label="חיפוש שיר" placeholder="חיפוש שיר או אמן" style="padding-right:44px;border-radius:27px" value="' + esc(S.query) + '"></label>' : '') +
+    '<div class="stack" style="gap:8px">' + rows +
+      (S.showAll && !list.length ? '<div style="padding:14px;font-size:15px;color:#5E5666">לא מצאנו את השיר ברשימה. אפשר לכתוב אותו למטה, בשיר אחר.</div>' : '') +
+      '<div class="opt' + (oOn ? ' on' : '') + '" style="border-width:1.5px;border-radius:18px;display:flex;flex-direction:column">' +
+        '<button type="button" class="tap" data-act="other" aria-pressed="' + oOn + '" style="display:flex;align-items:center;gap:12px;min-height:56px;background:transparent;font-size:16px;color:#17111D;text-align:right;padding:0 14px"><span class="ring"></span><span style="flex:1;font-weight:500">שיר אחר, שלא ברשימה</span></button>' +
+        (oOn ? '<div style="padding:0 14px 14px"><input class="f-in" type="text" data-other="' + step + '" aria-label="שם השיר והאמן" placeholder="שם השיר והאמן" value="' + esc(S.other[step]) + '"></div>' : '') +
+      '</div></div>' +
+    (more > 0 ? '<button type="button" class="tap link-btn" data-act="toggleAll">' + (S.showAll ? 'הצגת פחות שירים' : 'עוד ' + more + ' שירים ברשימה') + '</button>' : '') +
+    (step === 'glass' ? '<div class="stack" style="gap:10px;padding-top:6px"><div class="card-title">איך השיר יתנגן?</div>' + pills2('pause', [{id:'עם עצירה',label:'עם עצירה לפני הפזמון'},{id:'בלי עצירה',label:'ברצף, בלי עצירה'}]) + '</div>' : '') +
+    (step === 'ending' ? '<div class="stack" style="gap:10px;padding-top:6px"><div class="card-title">נלווה אתכם בנגינה לחדר הייחוד?</div>' + pills2('yichud', [{id:'כן',label:'כן, נשמח'},{id:'לא',label:'לא צריך'}]) + '</div>' : '') +
+    '</div>';
+}
+
+function viewPersonal(){
+  var ideas = IDEAS.map(function(n, i){
+    var on = S.ideas.indexOf(n) >= 0;
+    return '<button type="button" class="tap opt pill' + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-act="idea" data-i="' + i + '">' + esc(n) + '</button>';
+  }).join('');
+  return '<div class="stack screen" style="gap:22px;padding-top:12px">' + head('ועכשיו, מכם', 'אווירה, בקשות אישיות, שירים מיוחדים, כל מה שחשוב לכם שנדע.') +
+    field('מה חשוב לכם שנדע?', 'notes', {type:'textarea', ph:'ספרו לנו בחופשיות…'}) +
+    '<div class="stack" style="gap:10px"><div class="stack" style="gap:2px"><div class="card-title">עוד שירים שאתם אוהבים</div><div class="hint">אפשר לסמן כמה שרוצים</div></div><div class="chip-row">' + ideas + '</div></div>' +
+    field('איך הכרתם?', 'howMet', {type:'textarea', ph:'בכמה מילים, לא חובה'}) +
+    '<div class="stack" style="gap:10px"><div class="stack" style="gap:2px"><div class="card-title">איך שמעתם עלינו?</div><div class="hint">לא חובה</div></div>' +
+    pills('heard', [{id:'אינסטגרם',label:'אינסטגרם'},{id:'חברים',label:'חברים'},{id:'פייסבוק',label:'פייסבוק'},{id:'אחר',label:'אחר'}]) + '</div></div>';
+}
+
+function songText(k){ var v = S.songs[k]; if (v === '__other') return t(S.other[k]) || 'שיר אחר'; return v || 'עדיין לא נבחר'; }
+
+function viewSummary(){
+  var tl = MOMENTS.map(function(k, i){
+    var extra = '';
+    if (k === 'glass' && S.pause) extra = S.pause === 'עם עצירה' ? 'עם עצירה לפני הפזמון' : 'ברצף, בלי עצירה';
+    if (k === 'ending' && S.yichud) extra = 'ליווי לחדר ייחוד: ' + S.yichud;
+    var last = i === MOMENTS.length - 1;
+    return '<div style="display:flex;gap:14px"><div class="stack" style="align-items:center;width:28px;flex:none"><div style="width:28px;height:28px;border-radius:50%;background:var(--brand-grad);color:#17111D;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none">' + (i + 1) + '</div>' +
+      (last ? '' : '<div style="width:2px;flex:1;min-height:18px;background:rgba(255,255,255,.16)"></div>') + '</div>' +
+      '<div style="flex:1;display:flex;align-items:flex-start;gap:8px;padding-bottom:18px"><div class="stack" style="flex:1;gap:2px;padding-top:3px"><div style="font-size:13px;color:#D9CFE0">' + MM[k]().title + '</div><div style="font-size:17px;font-weight:700">' + esc(songText(k)) + '</div>' +
+      (extra ? '<div style="font-size:14px;color:#E9E1EE">' + esc(extra) + '</div>' : '') + '</div>' +
+      '<button type="button" class="tap" data-act="goto" data-step="' + k + '" style="height:36px;padding:0 13px;border-radius:18px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#F3ECF7;font-size:14px">שינוי</button></div></div>';
+  }).join('');
+  var details = [
+    ['חבילה', PKG[S.pkg] || '-'], ['תאריך', S.date ? S.date.split('-').reverse().join('.') : '-'], ['אולם', t(S.venue) || '-'],
+    ['מוזמנים', t(S.guests) || '-'], ['קבלת פנים', S.reception || '-'], ['חופה', S.chuppah || '-']
+  ].map(function(d){ return '<div style="display:flex;justify-content:space-between;gap:12px;font-size:15px"><span style="color:#5E5666">' + d[0] + '</span><span style="font-weight:500">' + esc(d[1]) + '</span></div>'; }).join('');
+  return '<div class="stack screen" style="gap:20px;padding-top:12px">' + head('הפסקול של החופה שלכם', 'ככה זה יישמע. אפשר לשנות כל רגע לפני השליחה.') +
+    '<div class="stack" style="border-radius:26px;background:radial-gradient(100% 60% at 100% 0%,rgba(238,106,44,.5) 0%,rgba(238,106,44,0) 65%),radial-gradient(90% 55% at 0% 100%,rgba(194,63,160,.45) 0%,rgba(194,63,160,0) 65%),#17111D;color:#fff;padding:22px 18px;box-shadow:0 18px 40px rgba(23,17,29,.22)">' + tl + '</div>' +
+    '<div class="card" style="gap:12px"><div style="display:flex;align-items:center;justify-content:space-between"><div class="card-title">פרטי האירוע</div><button type="button" class="tap" data-act="goto" data-step="event" style="height:36px;padding:0 13px;border-radius:18px;border:1px solid #E9E1DB;background:#fff;color:#3A3340;font-size:14px">שינוי</button></div>' + details + '</div>' +
+    (S.error ? '<div class="err-box" role="alert">' + esc(S.error) + '</div>' : '') +
+    '</div>';
+}
+
+function viewDone(){
+  var title = t(S.bride) && t(S.groom) ? 'תודה, ' + esc(B()) + ' ו' + esc(G()) + '!' : 'תודה רבה!';
+  return '<section class="done screen ' + BG + '" style="align-items:center;justify-content:center;text-align:center">' +
+    '<div class="shade" aria-hidden="true" style="background:linear-gradient(180deg,rgba(18,13,23,.75) 0%,rgba(18,13,23,.9) 45%,#120D17 100%)"></div>' +
+    '<div class="stack" style="position:relative;align-items:center;gap:16px;padding:40px 28px">' +
+      '<div style="width:92px;height:92px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 0 0 10px rgba(255,255,255,.06),0 18px 44px rgba(232,69,106,.5)">' + ICONS.check + '</div>' +
+      '<h1 style="font-size:32px;line-height:1.2">' + title + '</h1>' +
+      '<p style="margin:0 0 12px;font-size:17px;line-height:1.6;color:#DCD2E3">קיבלנו את כל הבחירות שלכם. מחכים לפגוש אתכם!</p>' +
+      '<a href="https://wa.me/message/Q2GRQQKF23XXP1" style="width:100%;height:58px;border-radius:29px;background:var(--grad);color:#fff;font-size:19px;font-weight:700;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 14px 36px rgba(232,69,106,.45)">שאלה? כתבו לנו בוואטסאפ</a>' +
+      '<div style="font-size:15px;color:#D9CFE0">או בטלפון <a href="tel:0547616276" style="color:#D9CFE0">054-761-6276</a></div>' +
+    '</div></section>';
+}
+
+/* ================= ציור ================= */
+var app = document.getElementById('app');
+
+function render(){
+  var step = curStep();
+  if (step === 'welcome'){ app.innerHTML = viewWelcome(); return; }
+  if (step === 'done'){ app.innerHTML = viewDone(); return; }
+  var body = '';
+  if (step === 'who') body = viewWho();
+  else if (step === 'names') body = viewNames();
+  else if (step === 'package') body = viewPackage();
+  else if (step === 'event') body = viewEvent();
+  else if (step === 'team') body = viewTeam();
+  else if (step === 'phones') body = viewPhones();
+  else if (MOMENTS.indexOf(step) >= 0) body = viewMoment(step);
+  else if (step === 'personal') body = viewPersonal();
+  else if (step === 'summary') body = viewSummary();
+  var miss = missing(step);
+  var label = step === 'summary' ? (S.sending ? 'שולחים…' : 'שליחה') : step === 'personal' ? 'לסיכום' : 'המשך';
+  // הכפתור פעיל עד הניסיון הראשון; אחרי ניסיון עם חוסרים הוא נעול עד שמשלימים
+  var dis = S.sending || (S.triedNext && miss.length > 0);
+  app.innerHTML = viewHeader() +
+    '<main style="flex:1;padding:8px 20px 28px">' + body + '</main>' +
+    '<div class="footer"><button type="button" class="tap btn-main" data-act="next"' + (dis ? ' disabled' : '') + '>' + label + '</button>' +
+    '<div class="missing" role="status">' + (S.triedNext && miss.length ? 'חסר: ' + esc(miss.join(', ')) : '') + '</div></div>';
+}
+
+/* ================= אירועים ================= */
+app.addEventListener('click', function(e){
+  var el = e.target.closest('[data-act]');
+  if (!el || el.disabled) return;
+  var act = el.getAttribute('data-act');
+  var step = curStep();
+  if (act === 'start') return go(1);
+  if (act === 'back') return go(Math.max(0, S.step - 1));
+  if (act === 'goto') return go(STEPS.indexOf(el.getAttribute('data-step')));
+  if (act === 'who'){ S.who = el.getAttribute('data-val'); render(); setTimeout(function(){ if (curStep() === 'who') go(2); }, 280); return; }
+  if (act === 'pick'){
+    var k = el.getAttribute('data-key'), v = el.getAttribute('data-val');
+    S[k] = (S[k] === v && (k === 'heard' || k === 'pause' || k === 'yichud')) ? '' : v;
+    return render();
+  }
+  if (act === 'toggleProd'){ S.hasProd = !S.hasProd; return render(); }
+  if (act === 'song'){ S.songs[step] = shownSongs[+el.getAttribute('data-i')]; return render(); }
+  if (act === 'other'){ S.songs[step] = '__other'; render(); var o = app.querySelector('[data-other]'); if (o) o.focus(); return; }
+  if (act === 'toggleAll'){ S.showAll = !S.showAll; S.query = ''; render(); if (S.showAll){ var s = app.querySelector('[data-field="query"]'); if (s) s.focus(); } return; }
+  if (act === 'idea'){
+    var n = IDEAS[+el.getAttribute('data-i')];
+    var at = S.ideas.indexOf(n);
+    if (at >= 0) S.ideas.splice(at, 1); else S.ideas.push(n);
+    return render();
+  }
+  if (act === 'next'){
+    if (missing(step).length){ S.triedNext = true; render(); var bad = app.querySelector('.f-in.err'); if (bad) bad.focus(); return; }
+    if (step === 'summary') return submit();
+    return go(Math.min(STEPS.length - 1, S.step + 1));
+  }
+});
+
+// עדכון שדות בלי לאבד פוקוס
+var REDRAW = {bride:1, groom:1, dj:1, query:1};
+app.addEventListener('input', function(e){
+  var el = e.target;
+  var f = el.getAttribute('data-field');
+  var o = el.getAttribute('data-other');
+  if (f){ S[f] = el.value; }
+  else if (o){ S.other[o] = el.value; }
+  else return;
+  if ((f && REDRAW[f]) || S.triedNext){
+    var sel = null; try { sel = [el.selectionStart, el.selectionEnd]; } catch(err){}
+    render();
+    var again = app.querySelector(f ? '[data-field="' + f + '"]' : '[data-other="' + o + '"]');
+    if (again){ again.focus(); try { if (sel && sel[0] != null) again.setSelectionRange(sel[0], sel[1]); } catch(err){} }
+  }
+});
+
+/* ================= שליחה ================= */
+function payload(){
+  var payerName = '', payerPhone = '';
+  if (S.payer === 'groom'){ payerName = t(S.groom); payerPhone = S.groomPhone; }
+  if (S.payer === 'bride'){ payerName = t(S.bride); payerPhone = S.bridePhone; }
+  if (S.payer === 'other'){ payerName = t(S.payName); payerPhone = S.payPhone; }
+  var song = function(k){ var v = S.songs[k]; return v === '__other' ? t(S.other[k]) : v; };
+  return {
+    submissionId: submissionId,
+    submittedAt: new Date().toISOString(),
+    eventRecordId: eventRecordId,
+    singer: singerKey,
+    filledBy: S.who === 'bride' ? 'הכלה' : S.who === 'groom' ? 'החתן' : '',
+    eventType: PKG[S.pkg] || '',
+    groomName: t(S.groom), brideName: t(S.bride),
+    weddingDate: S.date, hall: t(S.venue), guests: t(S.guests),
+    receptionTime: S.reception, chuppahTime: S.chuppah,
+    brideEscortName: t(S.escort), brideEscortPhone: t(S.escortPhone),
+    groomEscortName: t(S.gEscort), groomEscortPhone: t(S.gEscortPhone),
+    producerName: S.hasProd ? t(S.prod) : '', producerPhone: S.hasProd ? t(S.prodPhone) : '',
+    djName: t(S.dj), djPhone: t(S.dj) ? t(S.djPhone) : '',
+    bridePhone: t(S.bridePhone), groomPhone: t(S.groomPhone),
+    payerName: payerName, payerPhone: t(payerPhone),
+    songVeil: song('veil'), songBracha: song('bracha'), songEntrance: song('entrance'), songGlass: song('glass'), songEnding: song('ending'),
+    glassPause: S.pause, escortToYichud: S.yichud,
+    notes: t(S.notes),
+    extraSongs: S.ideas.length ? 'שירים נוספים שאהבנו: ' + S.ideas.join(', ') : '',
+    howMet: t(S.howMet), heardFrom: S.heard
+  };
+}
+
+function submit(){
+  if (S.sending) return;
+  S.sending = true; S.error = ''; render();
+  if (!LIVE){ // מצב תצוגה - לא שולחים כלום
+    setTimeout(function(){ S.sending = false; go(STEPS.indexOf('done')); }, 600);
+    return;
+  }
+  var data = payload();
+  var body = new URLSearchParams();
+  Object.keys(data).forEach(function(k){ body.append(k, data[k] == null ? '' : String(data[k])); });
+  fetch(WEBHOOK_URL, { method:'POST', mode:'no-cors', body: body })
+    .then(function(){ S.sending = false; go(STEPS.indexOf('done')); })
+    .catch(function(){
+      S.sending = false;
+      S.error = 'משהו השתבש בשליחה. בדקו שיש חיבור לאינטרנט ונסו שוב. אם זה חוזר, כתבו לנו בוואטסאפ.';
+      render();
+    });
+}
+
+render();
+})();
+</script>
+</body>
+</html>
