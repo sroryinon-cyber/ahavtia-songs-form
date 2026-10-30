@@ -114,7 +114,9 @@ var SONGS = {
   ending:['עד בלי די (והריקותי)','מהרה מהרה','ישיש עלייך','בורא עולם','ישמח חתני','שמחה גדולה הלילה','עוד ישמע - ישי ריבו']
 };
 var IDEAS = ['ויהי נועם','שיר של יום חולין','אור החיים - ישי ריבו','אשת חיל - איתן כץ','ידיד נפש - אביאל סולטן','הדור נאה - עמיחי פלסר','ניגון לבניה','תן לי תפילה - שמואל','מזמור לתודה - עקיבא','בראשית - שולי רנד','להינשא הלילה','מודה אני - בניה ברבי','ניגון ארבע בבות','עוד ישמע - ישי ריבו (אקוסטי)','לא יפריד דבר בינינו','יש לי אור - בוצר','להביע אהבה - ישי ריבו','בואי בשלום - בן סנוף','אוחילה - ישי ריבו'];
-var PKG = {band:'להקה לאורך הערב', chuppah:'כיסא כלה חופה בלבד'};
+var PKG = {banddj:'להקה & די־ג׳יי', band2:'להקה לכל הערב', chuppah:'כיסא כלה וחופה', band1:'להקה עד סבב ראשון'};
+// סוג האירוע שנשלח ל-Airtable - חייב להישאר אחד משני הערכים שהאוטומציות הקיימות מכירות
+var EVT = {banddj:'להקה לאורך הערב', band2:'להקה לאורך הערב', band1:'להקה לאורך הערב', chuppah:'כיסא כלה חופה בלבד'};
 
 /* ================= פרמטרים מהקישור ================= */
 var q = new URLSearchParams(location.search);
@@ -128,6 +130,7 @@ var singerKey = qp('singer').toLowerCase();
 var singer = SINGERS[singerKey] || null;
 var BG = singer ? singer.bg : DEFAULT_BG;
 var eventRecordId = qp('eventRecordId').replace(/[^A-Za-z0-9]/g, '');
+var systemDj = qp('dj'); // הדי־ג׳יי ששובץ לאירוע במערכת
 
 /* ================= מצב ================= */
 var S = {
@@ -173,7 +176,7 @@ function missing(step){
     if (t(S.escortPhone) && !phoneOk(S.escortPhone)) m.push('טלפון המלווה של ' + B());
     if (t(S.gEscortPhone) && !phoneOk(S.gEscortPhone)) m.push('טלפון המלווה של ' + G());
     if (S.hasProd && t(S.prodPhone) && !phoneOk(S.prodPhone)) m.push('טלפון המפיק');
-    if (t(S.djPhone) && !phoneOk(S.djPhone)) m.push('טלפון הדי־ג׳יי');
+    if (S.pkg === 'chuppah' && !systemDj && t(S.dj) && t(S.djPhone) && !phoneOk(S.djPhone)) m.push('טלפון הדי־ג׳יי');
   }
   if (step === 'phones'){
     if (!phoneOk(S.bridePhone)) m.push('הטלפון של ' + B());
@@ -194,6 +197,8 @@ var ICONS = {
   groom:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l7 5-7 5z"/><path d="M21 7l-7 5 7 5z"/><rect x="10" y="10" width="4" height="4" rx="1"/></svg>',
   bride:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="15" r="6"/><path d="M9 4h6l-3 4.5z"/></svg>',
   band:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+  headphones:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="7" rx="1.5"/><rect x="17" y="14" width="4" height="7" rx="1.5"/></svg>',
+  mic:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>',
   chuppah:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9c3-4.5 15-4.5 18 0z"/><path d="M5 9v11"/><path d="M19 9v11"/></svg>',
   search:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
   check:'<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
@@ -288,8 +293,10 @@ function viewNames(){
 
 function viewPackage(){
   var opts = [
-    {id:'band', title:'להקה לאורך הערב', sub:'מקבלת הפנים ועד סוף הריקודים', icon:ICONS.band},
-    {id:'chuppah', title:'כיסא כלה וחופה', sub:'הרגעים המרגשים של הטקס', icon:ICONS.chuppah}
+    {id:'banddj', title:PKG.banddj, sub:'הלהקה בסבב הראשון והדי־ג׳יי שלנו עד סוף הערב', icon:ICONS.headphones},
+    {id:'band2', title:PKG.band2, sub:'הלהקה מנגנת בשני סבבי הריקודים', icon:ICONS.band},
+    {id:'chuppah', title:PKG.chuppah, sub:'הרגעים המרגשים של הטקס', icon:ICONS.chuppah},
+    {id:'band1', title:PKG.band1, sub:'מקבלת הפנים ועד סוף הסבב הראשון', icon:ICONS.mic}
   ];
   return '<div class="stack screen" style="gap:20px;padding-top:12px">' + head('באיזה חלק של החתונה ננגן?', 'לפי זה נתאים את השאלות הבאות.') +
     '<div class="stack" style="gap:12px">' + opts.map(function(o){
@@ -317,8 +324,17 @@ function viewTeam(){
     '<button type="button" class="tap card" data-act="toggleProd" aria-pressed="' + S.hasProd + '" style="flex-direction:row;align-items:center;gap:14px;min-height:66px;padding:12px 18px;text-align:right;color:#17111D">' +
       '<span style="flex:1;font-size:17px;font-weight:700">יש לכם מפיק או מנהל אירוע חיצוני?</span><span class="toggle-track' + (S.hasProd ? ' on' : '') + '"><span></span></span></button>' +
     (S.hasProd ? '<div class="card screen">' + field('שם המפיק', 'prod') + field('טלפון', 'prodPhone', {type:'tel', ph:'050-000-0000', check:tel}) + '</div>' : '') +
-    '<div class="card"><div class="stack" style="gap:2px"><div class="card-title">די־ג׳יי</div><div class="hint">אם אין, אפשר לדלג</div></div>' + field('שם הדי־ג׳יי', 'dj') +
-      (t(S.dj) ? field('טלפון הדי־ג׳יי', 'djPhone', {type:'tel', ph:'050-000-0000', check:tel}) : '') + '</div></div>';
+    djCard(tel) + '</div>';
+}
+
+function djCard(tel){
+  if (S.pkg === 'banddj' || (S.pkg === 'chuppah' && systemDj)) return '<div class="card"><div class="card-title">הדי־ג׳יי שלכם</div>' +
+    (systemDj ? '<div style="font-size:19px;font-weight:800;color:#17111D">' + esc(systemDj) + '</div><div class="hint">כבר משובץ לחתונה שלכם, אין צורך למלא כלום.</div>'
+              : '<div class="hint">הדי־ג׳יי שלנו ישובץ לחתונה שלכם, אין צורך למלא כלום.</div>') + '</div>';
+  if (S.pkg === 'band1') return '<div class="card"><div class="stack" style="gap:2px"><div class="card-title">הדי־ג׳יי שממשיך אחרינו</div><div class="hint">רק כדי שנדע עם מי אנחנו עובדים באירוע. אם עוד לא סגרתם, אפשר לדלג.</div></div>' + field('שם הדי־ג׳יי', 'dj') + '</div>';
+  if (S.pkg === 'chuppah') return '<div class="card"><div class="stack" style="gap:2px"><div class="card-title">די־ג׳יי</div><div class="hint">אם אין, אפשר לדלג</div></div>' + field('שם הדי־ג׳יי', 'dj') +
+      (t(S.dj) ? field('טלפון הדי־ג׳יי', 'djPhone', {type:'tel', ph:'050-000-0000', check:tel}) : '') + '</div>';
+  return '';
 }
 
 function viewPhones(){
@@ -516,14 +532,15 @@ function payload(){
     eventRecordId: eventRecordId,
     singer: singerKey,
     filledBy: S.who === 'bride' ? 'הכלה' : S.who === 'groom' ? 'החתן' : '',
-    eventType: PKG[S.pkg] || '',
+    eventType: EVT[S.pkg] || '',
     groomName: t(S.groom), brideName: t(S.bride),
     weddingDate: S.date, hall: t(S.venue), guests: t(S.guests),
     receptionTime: S.reception, chuppahTime: S.chuppah,
     brideEscortName: t(S.escort), brideEscortPhone: t(S.escortPhone),
     groomEscortName: t(S.gEscort), groomEscortPhone: t(S.gEscortPhone),
     producerName: S.hasProd ? t(S.prod) : '', producerPhone: S.hasProd ? t(S.prodPhone) : '',
-    djName: t(S.dj), djPhone: t(S.dj) ? t(S.djPhone) : '',
+    djName: ((S.pkg === 'chuppah' && !systemDj) || S.pkg === 'band1') ? t(S.dj) : '',
+    djPhone: (S.pkg === 'chuppah' && !systemDj && t(S.dj)) ? t(S.djPhone) : '',
     bridePhone: t(S.bridePhone), groomPhone: t(S.groomPhone),
     payerName: payerName, payerPhone: t(payerPhone),
     songVeil: song('veil'), songBracha: song('bracha'), songEntrance: song('entrance'), songGlass: song('glass'), songEnding: song('ending'),
