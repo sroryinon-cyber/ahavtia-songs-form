@@ -216,11 +216,12 @@ function field(label, key, opts){
     (opts.ph ? ' placeholder="' + esc(opts.ph) + '"' : '') +
     (type === 'tel' ? ' inputmode="tel" autocomplete="tel"' : '') +
     (type === 'number' ? ' inputmode="numeric" min="0"' : '') +
-    (opts.auto ? ' autocomplete="' + opts.auto + '"' : '');
+    (opts.auto ? ' autocomplete="' + opts.auto + '"' : '') +
+    (opts.aria ? ' aria-label="' + esc(opts.aria) + '"' : '');
   var control = type === 'textarea'
     ? '<textarea ' + attrs.replace(' type="textarea"', '') + '>' + esc(val) + '</textarea>'
     : '<input ' + attrs + ' value="' + esc(val) + '">';
-  return '<label class="field"><span' + (opts.req ? ' class="req"' : '') + '>' + esc(label) + '</span>' + control + '</label>';
+  return '<label class="field">' + (label ? '<span' + (opts.req ? ' class="req"' : '') + '>' + esc(label) + '</span>' : '') + control + '</label>';
 }
 function head(title, lead){
   return '<div class="stack" style="gap:8px"><h2>' + esc(title) + '</h2>' + (lead ? '<p class="lead">' + esc(lead) + '</p>' : '') + '</div>';
@@ -404,8 +405,8 @@ function viewMoment(step){
 }
 
 function viewPersonal(){
-  return '<div class="stack screen" style="gap:22px;padding-top:12px">' + head('ועכשיו, מכם', 'אווירה, בקשות אישיות, שירים מיוחדים, כל מה שחשוב לכם שנדע.') +
-    field('מה חשוב לכם שנדע?', 'notes', {type:'textarea', ph:'ספרו לנו בחופשיות…'}) +
+  return '<div class="stack screen" style="gap:22px;padding-top:12px">' + head('יש משהו שחשוב שנדע?', 'אווירה, בקשות אישיות, שירים מיוחדים, כל מה שחשוב לכם שנדע.') +
+    field('', 'notes', {type:'textarea', ph:'ספרו לנו בחופשיות…', aria:'משהו שחשוב שנדע'}) +
     field('איך הכרתם?', 'howMet', {type:'textarea', ph:'בכמה מילים, לא חובה'}) +
     '</div>';
 }
