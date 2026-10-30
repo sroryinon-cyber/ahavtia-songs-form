@@ -316,7 +316,6 @@ function viewEvent(){
   return '<div class="stack screen" style="gap:20px;padding-top:12px">' + head('ספרו לנו על האירוע', 'כמו שכתוב בהזמנה.') +
     field('תאריך החתונה', 'date', {type:'date', req:true, check:function(v){ return !!v; }}) +
     field('שם האולם', 'venue', {ph:'איפה חוגגים?', req:true, check:t}) +
-    field('כמות מוזמנים', 'guests', {type:'number', ph:'בערך'}) +
     '<div class="grid2">' + field('קבלת פנים', 'reception', {type:'time', req:true, check:function(v){ return !!v; }}) + field('חופה', 'chuppah', {type:'time', req:true, check:function(v){ return !!v; }}) + '</div></div>';
 }
 
@@ -427,7 +426,7 @@ function viewSummary(){
   }).join('');
   var details = [
     ['חבילה', PKG[S.pkg] || '-'], ['תאריך', S.date ? S.date.split('-').reverse().join('.') : '-'], ['אולם', t(S.venue) || '-'],
-    ['מוזמנים', t(S.guests) || '-'], ['קבלת פנים', S.reception || '-'], ['חופה', S.chuppah || '-']
+    ['קבלת פנים', S.reception || '-'], ['חופה', S.chuppah || '-']
   ].map(function(d){ return '<div style="display:flex;justify-content:space-between;gap:12px;font-size:15px"><span style="color:#5E5666">' + d[0] + '</span><span style="font-weight:500">' + esc(d[1]) + '</span></div>'; }).join('');
   return '<div class="stack screen" style="gap:20px;padding-top:12px">' + head('הפסקול של החופה שלכם', 'ככה זה יישמע. אפשר לשנות כל רגע לפני השליחה.') +
     '<div class="stack" style="border-radius:26px;background:radial-gradient(100% 60% at 100% 0%,rgba(238,106,44,.5) 0%,rgba(238,106,44,0) 65%),radial-gradient(90% 55% at 0% 100%,rgba(194,63,160,.45) 0%,rgba(194,63,160,0) 65%),#17111D;color:#fff;padding:22px 18px;box-shadow:0 18px 40px rgba(23,17,29,.22)">' + tl + '</div>' +
