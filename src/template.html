@@ -429,7 +429,11 @@ function viewSummary(){
     ['חבילה', PKG[S.pkg] || '-'], ['תאריך', S.date ? S.date.split('-').reverse().join('.') : '-'], ['אולם', t(S.venue) || '-'],
     ['קבלת פנים', S.reception || '-'], ['חופה', S.chuppah || '-']
   ].map(function(d){ return '<div style="display:flex;justify-content:space-between;gap:12px;font-size:15px"><span style="color:#5E5666">' + d[0] + '</span><span style="font-weight:500">' + esc(d[1]) + '</span></div>'; }).join('');
-  return '<div class="stack screen" style="gap:20px;padding-top:12px">' + head('הפסקול של החופה שלכם', 'ככה זה יישמע. אפשר לשנות כל רגע לפני השליחה.') +
+  var dateTxt = S.date ? S.date.split('-').reverse().join('.') : '';
+  return '<div class="stack screen" style="gap:20px;padding-top:12px">' +
+    '<div class="stack" style="gap:6px"><h2>סיכום השירים של <span style="white-space:nowrap">' + esc(GF() + ' & ' + BF()) + '</span></h2>' +
+    (dateTxt ? '<div style="font-size:18px;font-weight:700;color:var(--ink)">' + esc(dateTxt) + '</div>' : '') +
+    '<p class="lead">במידת הצורך, אפשר לשנות את השירים עד החתונה.</p></div>' +
     '<div class="stack" style="border-radius:26px;background:radial-gradient(100% 60% at 100% 0%,rgba(238,106,44,.5) 0%,rgba(238,106,44,0) 65%),radial-gradient(90% 55% at 0% 100%,rgba(194,63,160,.45) 0%,rgba(194,63,160,0) 65%),#17111D;color:#fff;padding:22px 18px;box-shadow:0 18px 40px rgba(23,17,29,.22)">' + tl + '</div>' +
     '<div class="card" style="gap:12px"><div style="display:flex;align-items:center;justify-content:space-between"><div class="card-title">פרטי האירוע</div><button type="button" class="tap" data-act="goto" data-step="event" style="height:36px;padding:0 13px;border-radius:18px;border:1px solid #E9E1DB;background:#fff;color:#3A3340;font-size:14px">שינוי</button></div>' + details + '</div>' +
     (S.error ? '<div class="err-box" role="alert">' + esc(S.error) + '</div>' : '') +
