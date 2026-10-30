@@ -134,10 +134,11 @@ var singer = SINGERS[singerKey] || null;
 var BG = singer ? singer.bg : DEFAULT_BG;
 var eventRecordId = qp('eventRecordId').replace(/[^A-Za-z0-9]/g, '');
 var systemDj = qp('dj'); // הדי־ג׳יי ששובץ לאירוע במערכת
+var systemPkg = PKG[qp('pkg')] ? qp('pkg') : ''; // החבילה שסגרו, לסימון מראש
 
 /* ================= מצב ================= */
 var S = {
-  step:0, who:'', bride:qp('bride_name'), groom:qp('groom_name'), pkg:'',
+  step:0, who:'', bride:qp('bride_name'), groom:qp('groom_name'), pkg:systemPkg,
   date:toIsoDate(qp('date')), venue:qp('hall'), guests:'', reception:'18:30', chuppah:'19:30',
   escort:'', escortPhone:'', gEscort:'', gEscortPhone:'', hasProd:false, prod:'', prodPhone:'', dj:'', djPhone:'',
   bridePhone:'', groomPhone:'', payer:'other', payName:'', payPhone:'',
