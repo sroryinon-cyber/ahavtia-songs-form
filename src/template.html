@@ -407,8 +407,7 @@ function viewPersonal(){
   return '<div class="stack screen" style="gap:22px;padding-top:12px">' + head('ועכשיו, מכם', 'אווירה, בקשות אישיות, שירים מיוחדים, כל מה שחשוב לכם שנדע.') +
     field('מה חשוב לכם שנדע?', 'notes', {type:'textarea', ph:'ספרו לנו בחופשיות…'}) +
     field('איך הכרתם?', 'howMet', {type:'textarea', ph:'בכמה מילים, לא חובה'}) +
-    '<div class="stack" style="gap:10px"><div class="stack" style="gap:2px"><div class="card-title">איך שמעתם עלינו?</div><div class="hint">לא חובה</div></div>' +
-    pills('heard', [{id:'אינסטגרם',label:'אינסטגרם'},{id:'חברים',label:'חברים'},{id:'פייסבוק',label:'פייסבוק'},{id:'אחר',label:'אחר'}]) + '</div></div>';
+    '</div>';
 }
 
 function songText(k){ var v = S.songs[k]; if (v === '__other') return t(S.other[k]) || 'שיר אחר'; return v || 'עדיין לא נבחר'; }
