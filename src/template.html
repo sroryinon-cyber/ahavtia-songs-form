@@ -134,7 +134,7 @@ var S = {
   step:0, who:'', bride:qp('bride_name'), groom:qp('groom_name'), pkg:'',
   date:toIsoDate(qp('date')), venue:qp('hall'), guests:'', reception:'18:30', chuppah:'19:30',
   escort:'', escortPhone:'', gEscort:'', gEscortPhone:'', hasProd:false, prod:'', prodPhone:'', dj:'', djPhone:'',
-  bridePhone:'', groomPhone:'', payer:'', payName:'', payPhone:'',
+  bridePhone:'', groomPhone:'', payer:'other', payName:'', payPhone:'',
   songs:{veil:'',bracha:'',entrance:'',glass:'',ending:''},
   other:{veil:'',bracha:'',entrance:'',glass:'',ending:''},
   pause:'', yichud:'', notes:'', howMet:'', ideas:[], heard:'',
@@ -178,8 +178,8 @@ function missing(step){
   if (step === 'phones'){
     if (!phoneOk(S.bridePhone)) m.push('הטלפון של ' + B());
     if (!phoneOk(S.groomPhone)) m.push('הטלפון של ' + G());
-    if (!S.payer) m.push('איש קשר לתשלום');
-    if (S.payer === 'other'){ if (!t(S.payName)) m.push('שם איש הקשר לתשלום'); if (!phoneOk(S.payPhone)) m.push('הטלפון שלו'); }
+    if (!t(S.payName)) m.push('שם אחראי התשלום');
+    if (!phoneOk(S.payPhone)) m.push('הטלפון של אחראי התשלום');
   }
   if (MOMENTS.indexOf(step) >= 0){
     var sel = S.songs[step];
@@ -325,9 +325,9 @@ function viewPhones(){
   return '<div class="stack screen" style="gap:20px;padding-top:12px">' + head('איך משיגים אתכם?', 'רק למקרה שנצטרך לתאם משהו לפני החתונה.') +
     field('הטלפון של ' + B(), 'bridePhone', {type:'tel', ph:'050-000-0000', req:true, check:phoneOk}) +
     field('הטלפון של ' + G(), 'groomPhone', {type:'tel', ph:'050-000-0000', req:true, check:phoneOk}) +
-    '<div class="stack" style="gap:10px"><div class="req" style="font-size:15px;font-weight:500;color:#3A3340">מי איש הקשר לתשלום?</div>' +
-    pills('payer', [{id:'groom',label:G()},{id:'bride',label:B()},{id:'other',label:'מישהו אחר'}]) + '</div>' +
-    (S.payer === 'other' ? '<div class="card screen">' + field('שם', 'payName', {req:true, check:t}) + field('טלפון', 'payPhone', {type:'tel', ph:'050-000-0000', req:true, check:phoneOk}) + '</div>' : '') +
+    '<div class="card"><div class="stack" style="gap:2px"><div class="card-title req">אחראי התשלום ללהקה</div>' +
+    '<div class="hint">חבר/ה או אח/ות שיהיו זמינים באירוע וימסרו את התשלום בסיום סבב הריקודים הראשון. כדי שתהיו בראש שקט, זה לא יכול להיות החתן, הכלה או אחד ההורים.</div></div>' +
+    field('שם', 'payName', {req:true, check:t}) + field('טלפון', 'payPhone', {type:'tel', ph:'050-000-0000', req:true, check:phoneOk}) + '</div>' +
     '</div>';
 }
 
@@ -508,9 +508,7 @@ app.addEventListener('input', function(e){
 /* ================= שליחה ================= */
 function payload(){
   var payerName = '', payerPhone = '';
-  if (S.payer === 'groom'){ payerName = t(S.groom); payerPhone = S.groomPhone; }
-  if (S.payer === 'bride'){ payerName = t(S.bride); payerPhone = S.bridePhone; }
-  if (S.payer === 'other'){ payerName = t(S.payName); payerPhone = S.payPhone; }
+  payerName = t(S.payName); payerPhone = S.payPhone;
   var song = function(k){ var v = S.songs[k]; return v === '__other' ? t(S.other[k]) : v; };
   return {
     submissionId: submissionId,
