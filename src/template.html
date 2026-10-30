@@ -404,13 +404,8 @@ function viewMoment(step){
 }
 
 function viewPersonal(){
-  var ideas = IDEAS.map(function(n, i){
-    var on = S.ideas.indexOf(n) >= 0;
-    return '<button type="button" class="tap opt pill' + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-act="idea" data-i="' + i + '">' + esc(n) + '</button>';
-  }).join('');
   return '<div class="stack screen" style="gap:22px;padding-top:12px">' + head('ועכשיו, מכם', 'אווירה, בקשות אישיות, שירים מיוחדים, כל מה שחשוב לכם שנדע.') +
     field('מה חשוב לכם שנדע?', 'notes', {type:'textarea', ph:'ספרו לנו בחופשיות…'}) +
-    '<div class="stack" style="gap:10px"><div class="stack" style="gap:2px"><div class="card-title">עוד שירים שאתם אוהבים</div><div class="hint">אפשר לסמן כמה שרוצים</div></div><div class="chip-row">' + ideas + '</div></div>' +
     field('איך הכרתם?', 'howMet', {type:'textarea', ph:'בכמה מילים, לא חובה'}) +
     '<div class="stack" style="gap:10px"><div class="stack" style="gap:2px"><div class="card-title">איך שמעתם עלינו?</div><div class="hint">לא חובה</div></div>' +
     pills('heard', [{id:'אינסטגרם',label:'אינסטגרם'},{id:'חברים',label:'חברים'},{id:'פייסבוק',label:'פייסבוק'},{id:'אחר',label:'אחר'}]) + '</div></div>';
