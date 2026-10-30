@@ -97,11 +97,11 @@ var DEFAULT_BG = 'bg-general';
 
 /* ================= נתונים ================= */
 var NONE = 'ללא שיר בחלק הזה';
-var STEPS = ['welcome','who','names','package','event','veil','bracha','entrance','glass','ending','team','phones','personal','summary','done'];
+var STEPS = ['welcome','who','names','package','event','songsIntro','veil','bracha','entrance','glass','ending','team','phones','personal','summary','done'];
 var CH = [
   {label:'היכרות', steps:['who','names','package']},
   {label:'האירוע', steps:['event']},
-  {label:'החופה', steps:['veil','bracha','entrance','glass','ending']},
+  {label:'החופה', steps:['songsIntro','veil','bracha','entrance','glass','ending']},
   {label:'אנשי קשר', steps:['team','phones']},
   {label:'סיום', steps:['personal','summary']}
 ];
@@ -315,6 +315,12 @@ function viewEvent(){
     '<div class="grid2">' + field('קבלת פנים', 'reception', {type:'time', req:true, check:function(v){ return !!v; }}) + field('חופה', 'chuppah', {type:'time', req:true, check:function(v){ return !!v; }}) + '</div></div>';
 }
 
+function viewSongsIntro(){
+  return '<div class="stack screen" style="gap:22px;padding-top:12px">' +
+    '<div class="bg-veil" role="img" aria-label="כיסוי הינומה בחתונה" style="width:100%;aspect-ratio:4/5;max-height:56vh;border-radius:28px;background-size:cover;background-position:center 30%;box-shadow:0 18px 40px rgba(23,17,29,.18)"></div>' +
+    '<h2 style="font-size:30px;line-height:1.2">נעבור לבחירת השירים הקטנים לרגעים הגדולים</h2></div>';
+}
+
 function viewTeam(){
   var tel = function(v){ return !t(v) || phoneOk(v); };
   return '<div class="stack screen" style="gap:16px;padding-top:12px">' + head('מי איתנו באירוע?', 'כדי שנוכל לתאם איתם את הרגעים החשובים.') +
@@ -455,6 +461,7 @@ function render(){
   else if (step === 'names') body = viewNames();
   else if (step === 'package') body = viewPackage();
   else if (step === 'event') body = viewEvent();
+  else if (step === 'songsIntro') body = viewSongsIntro();
   else if (step === 'team') body = viewTeam();
   else if (step === 'phones') body = viewPhones();
   else if (MOMENTS.indexOf(step) >= 0) body = viewMoment(step);
