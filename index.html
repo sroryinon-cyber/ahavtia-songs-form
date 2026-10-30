@@ -356,7 +356,7 @@ function viewPhones(){
 }
 
 var MM = {
-  veil:function(){ return {title:'כיסוי ההינומה', q:'איזה שיר ינוגן כש' + G() + ' מכסה את פני ' + B() + '?', explain:'הרגע השקט והמרגש שלפני החופה. הלהקה מנגנת ברקע.'}; },
+  veil:function(){ return {heading:'שיר כיסוי ההינומה', title:'כיסוי ההינומה', q:'איזה שיר ינוגן כש' + G() + ' מכסה את פני ' + B() + '?', explain:'הרגע השקט והמרגש שלפני החופה. הלהקה מנגנת ברקע.'}; },
   bracha:function(){ return {title:'ברכת הכלה', q:S.who === 'bride' ? B() + ', איזה שיר ילווה אותך בזמן הברכה?' : 'איזה שיר ילווה את ' + B() + ' בזמן הברכה?', explain:'אחרי כיסוי ההינומה חצי מהלהקה מלווה את ' + G() + ' אל החופה, וחצי נשארת עם ' + B() + ' ומנגנת בזמן שהיא מברכת.'}; },
   entrance:function(){ return {title:'כניסה לחופה', q:S.who === 'bride' ? B() + ', עם איזה שיר תיכנסי לחופה?' : 'עם איזה שיר ' + B() + ' תיכנס לחופה?', explain:'השיר שילווה את ' + B() + ' בדרך אל החופה.'}; },
   glass:function(){ return {title:'שבירת הכוס', q:'איזה שיר יתנגן לפני שבירת הכוס?', explain:'בחרו גם אם השיר נעצר לפני הפזמון לרגע השבירה, או מתנגן ברצף.', note:true}; },
@@ -386,8 +386,10 @@ function viewMoment(step){
   var oOn = sel === '__other';
   var more = all.length - (step === 'glass' ? 6 : 6);
   return '<div class="stack" style="gap:16px;padding-top:6px">' +
-    '<div style="display:flex;align-items:center;gap:10px"><div style="width:40px;height:40px;border-radius:50%;background:var(--brand-grad);color:#17111D;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px">' + (mi + 1) + '</div><div style="font-size:16px;font-weight:700;color:var(--ink)">' + m.title + '</div></div>' +
-    '<div class="stack" style="gap:8px"><h2 style="font-size:27px;line-height:1.22">' + esc(m.q) + '</h2><p class="lead">' + esc(m.explain) + '</p></div>' +
+    (m.heading
+      ? '<div class="stack" style="gap:12px;align-items:center;text-align:center;padding:10px 0 6px"><h2 style="font-family:Rubik,Heebo,sans-serif;font-weight:700;font-size:32px;line-height:1.2;letter-spacing:-.2px">' + esc(m.heading) + '</h2><div style="width:56px;height:4px;border-radius:2px;background:var(--grad)"></div></div>'
+      : '<div style="display:flex;align-items:center;gap:10px"><div style="width:40px;height:40px;border-radius:50%;background:var(--brand-grad);color:#17111D;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px">' + (mi + 1) + '</div><div style="font-size:16px;font-weight:700;color:var(--ink)">' + m.title + '</div></div>' +
+        '<div class="stack" style="gap:8px"><h2 style="font-size:27px;line-height:1.22">' + esc(m.q) + '</h2><p class="lead">' + esc(m.explain) + '</p></div>') +
     (m.note ? '<div style="border-radius:16px;background:#FFF7DD;border:1px solid #FAD45F;padding:12px 14px;font-size:14px;line-height:1.5;color:#5C4310">חשוב: כל שיר שמתנגן במהלך החופה כדאי לתאם מראש עם הרב, אחרת הוא עלול להתפספס.</div>' : '') +
     (S.showAll ? '<label style="position:relative;display:block"><span style="position:absolute;right:14px;top:17px;color:#7A7282;display:flex">' + ICONS.search + '</span><input class="f-in" type="search" data-field="query" aria-label="חיפוש שיר" placeholder="חיפוש שיר או אמן" style="padding-right:44px;border-radius:27px" value="' + esc(S.query) + '"></label>' : '') +
     '<div class="stack" style="gap:8px">' + rows +
