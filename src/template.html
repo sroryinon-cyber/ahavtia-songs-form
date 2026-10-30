@@ -174,7 +174,6 @@ function missing(step){
     if (!S.reception) m.push('שעת קבלת פנים'); if (!S.chuppah) m.push('שעת חופה');
   }
   if (step === 'team'){
-    if (t(S.escortPhone) && !phoneOk(S.escortPhone)) m.push('טלפון המלווה של ' + B());
     if (t(S.gEscortPhone) && !phoneOk(S.gEscortPhone)) m.push('טלפון המלווה של ' + G());
     if (S.hasProd && t(S.prodPhone) && !phoneOk(S.prodPhone)) m.push('טלפון המפיק');
     if (S.pkg === 'chuppah' && !systemDj && t(S.dj) && t(S.djPhone) && !phoneOk(S.djPhone)) m.push('טלפון הדי־ג׳יי');
@@ -319,7 +318,6 @@ function viewEvent(){
 function viewTeam(){
   var tel = function(v){ return !t(v) || phoneOk(v); };
   return '<div class="stack screen" style="gap:16px;padding-top:12px">' + head('מי איתנו באירוע?', 'כדי שנוכל לתאם איתם את הרגעים החשובים.') +
-    '<div class="card"><div class="card-title">המלווה של ' + esc(B()) + '</div>' + field('שם', 'escort', {ph:'למשל אחות או חברה קרובה'}) + field('טלפון', 'escortPhone', {type:'tel', ph:'050-000-0000', check:tel}) + '</div>' +
     '<div class="card"><div class="card-title">המלווה של ' + esc(G()) + '</div>' + field('שם', 'gEscort', {ph:'למשל אח או חבר קרוב'}) + field('טלפון', 'gEscortPhone', {type:'tel', ph:'050-000-0000', check:tel}) + '</div>' +
     '<button type="button" class="tap card" data-act="toggleProd" aria-pressed="' + S.hasProd + '" style="flex-direction:row;align-items:center;gap:14px;min-height:66px;padding:12px 18px;text-align:right;color:#17111D">' +
       '<span style="flex:1;font-size:17px;font-weight:700">יש לכם מפיק או מנהל אירוע חיצוני?</span><span class="toggle-track' + (S.hasProd ? ' on' : '') + '"><span></span></span></button>' +
