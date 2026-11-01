@@ -82,6 +82,8 @@ __BG_CSS__
 /* ================= הגדרות ================= */
 // כתובת ה-Webhook של התרחיש החדש ב-Make
 var WEBHOOK_URL = '__WEBHOOK_URL__';
+// Webhook נפרד לאנשי הקשר לתשלום (נשלח גם מהטופס המלא וגם מדף מוסר המזומן)
+var PAY_WEBHOOK_URL = '__PAY_WEBHOOK_URL__';
 // false = מצב תצוגה: לחיצה על "שליחה" לא שולחת כלום. להעביר ל-true רק בשלב הבדיקות.
 var LIVE = true;
 
@@ -132,6 +134,7 @@ var BG = singer ? singer.bg : DEFAULT_BG;
 var eventRecordId = qp('eventRecordId').replace(/[^A-Za-z0-9]/g, '');
 var systemDj = qp('dj'); // הדי־ג׳יי ששובץ לאירוע במערכת
 var systemPkg = PKG[qp('pkg')] ? qp('pkg') : ''; // החבילה שסגרו, לסימון מראש
+var MODE = qp('mode') === 'cash' ? 'cash' : ''; // cash = דף קצר להשלמת מוסר המזומן בלבד
 
 /* ================= מצב ================= */
 var S = {
@@ -139,6 +142,7 @@ var S = {
   date:toIsoDate(qp('date')), venue:qp('hall'), guests:'', reception:'18:30', chuppah:'19:30',
   escort:'', escortPhone:'', gEscort:'', gEscortPhone:'', hasProd:false, prod:'', prodPhone:'', dj:'', djPhone:'',
   bridePhone:'', groomPhone:'', payer:'other', payName:'', payPhone:'',
+  selfPay:false, payContactName:'', payContactRelation:'', payContactPhone:'',
   songs:{veil:'',bracha:'',entrance:'',glass:'',ending:''},
   other:{veil:'',bracha:'',entrance:'',glass:'',ending:''},
   pause:'', yichud:'', notes:'', howMet:'', ideas:[], heard:'',
@@ -158,6 +162,27 @@ function phoneOk(p){
   var d = (p || '').replace(/\D/g, '');
   if (d.indexOf('972') === 0) d = '0' + d.slice(3);
   return /^0(5\d{8}|[2-489]\d{7}|7\d{8})$/.test(d);
+}
+function nd(p){ var d = (p || '').replace(/\D/g, ''); if (d.indexOf('972') === 0) d = '0' + d.slice(3); return d; }
+function cashSamePhone(){ // מוסר המזומן לא יכול להיות החתן, הכלה או מי שמטפל בתשלום
+  var c = nd(S.payPhone); if (!c) return false;
+  return [S.bridePhone, S.groomPhone, S.selfPay ? '' : S.payContactPhone].some(function(x){ return nd(x) === c; });
+}
+// בדיקות מוסר המזומן. required=true בדף ההשלמה, שם שני השדות חובה
+function cashMissing(required){
+  var m = [];
+  var hasN = !!t(S.payName), hasP = !!t(S.payPhone);
+  if (required || hasN || hasP){
+    if (!hasN) m.push('שם מוסר המזומן');
+    if (!phoneOk(S.payPhone)) m.push('הטלפון של מוסר המזומן');
+  }
+  if (!required && hasP && phoneOk(S.payPhone) && cashSamePhone()) m.push(SAME_MSG);
+  return m;
+}
+var SAME_MSG = 'מוסר המזומן צריך להיות מישהו אחר';
+function missText(miss){ // הודעת ״מישהו אחר״ מוצגת בפני עצמה, לא כחלק מרשימת החוסרים
+  var rest = miss.filter(function(x){ return x !== SAME_MSG; });
+  return (rest.length ? 'חסר: ' + rest.join(', ') : '') + (rest.length < miss.length ? (rest.length ? '. ' : '') + SAME_MSG : '');
 }
 function curStep(){ return STEPS[S.step]; }
 
@@ -184,9 +209,13 @@ function missing(step){
   if (step === 'phones'){
     if (!phoneOk(S.bridePhone)) m.push('הטלפון של ' + B());
     if (!phoneOk(S.groomPhone)) m.push('הטלפון של ' + G());
-    if (!t(S.payName)) m.push('שם אחראי התשלום');
-    if (!phoneOk(S.payPhone)) m.push('הטלפון של אחראי התשלום');
+    if (!S.selfPay){
+      if (!t(S.payContactName)) m.push('שם מי שמטפל בתשלום');
+      if (!phoneOk(S.payContactPhone)) m.push('הטלפון של מי שמטפל בתשלום');
+    }
+    m = m.concat(cashMissing(false));
   }
+  if (step === 'cash') m = m.concat(cashMissing(true));
   if (MOMENTS.indexOf(step) >= 0){
     var sel = S.songs[step];
     if (!sel || (sel === '__other' && !t(S.other[step]))) m.push('שיר');
@@ -346,14 +375,52 @@ function djCard(tel){
   return '';
 }
 
+var CASH_HINT = 'חבר/ה או אח/ות שיהיו באירוע וימסרו את מעטפת המזומן למנהל הצוות בסיום סבב הריקודים הראשון. לא החתן, הכלה או אחד ההורים, כדי שתהיו פנויים לשמוח.';
+function cashFields(required){
+  var nameOk = function(v){ return required || (!t(v) && !t(S.payPhone)) || !!t(v); };
+  var telOk = function(v){ return ((!required && !t(v) && !t(S.payName)) || phoneOk(v)) && (required || !cashSamePhone()); };
+  return field('שם', 'payName', {req:required, check:required ? t : nameOk}) +
+    field('טלפון', 'payPhone', {type:'tel', ph:'050-000-0000', req:required, check:telOk}) +
+    (S.triedNext && !required && cashSamePhone() ? '<div class="hint" style="color:#C2372B">מוסר המזומן צריך להיות מישהו אחר</div>' : '');
+}
 function viewPhones(){
   return '<div class="stack screen" style="gap:20px;padding-top:12px">' + head('איך משיגים אתכם?', 'רק למקרה שנצטרך לתאם משהו לפני החתונה.') +
     field('הטלפון של ' + B(), 'bridePhone', {type:'tel', ph:'050-000-0000', req:true, check:phoneOk}) +
     field('הטלפון של ' + G(), 'groomPhone', {type:'tel', ph:'050-000-0000', req:true, check:phoneOk}) +
-    '<div class="card"><div class="stack" style="gap:2px"><div class="card-title req">אחראי התשלום ללהקה</div>' +
-    '<div class="hint">חבר/ה או אח/ות שיהיו זמינים באירוע וימסרו את התשלום בסיום סבב הריקודים הראשון. כדי שתהיו בראש שקט, זה לא יכול להיות החתן, הכלה או אחד ההורים.</div></div>' +
-    field('שם', 'payName', {req:true, check:t}) + field('טלפון', 'payPhone', {type:'tel', ph:'050-000-0000', req:true, check:phoneOk}) + '</div>' +
+    '<div class="card"><div class="stack" style="gap:2px"><div class="card-title req">מי מטפל בתשלום ללהקה?</div>' +
+    '<div class="hint">בדרך כלל אחד ההורים. מולו נתאם את היתרה ואת ההעברות לפני החתונה, כדי שאתם לא תצטרכו להתעסק בזה.</div></div>' +
+    '<button type="button" class="tap" data-act="toggleSelfPay" aria-pressed="' + S.selfPay + '" style="display:flex;flex-direction:row;align-items:center;gap:14px;min-height:54px;padding:6px 0;background:transparent;text-align:right;color:#17111D">' +
+      '<span style="flex:1;font-size:16px;font-weight:600">אנחנו מטפלים בתשלום בעצמנו</span><span class="toggle-track' + (S.selfPay ? ' on' : '') + '"><span></span></span></button>' +
+    (S.selfPay ? '' : field('שם', 'payContactName', {ph:'למשל: יוסי כהן', req:true, check:t}) +
+      field('מה הקשר לזוג', 'payContactRelation', {ph:'למשל: אבא של הכלה'}) +
+      field('טלפון', 'payContactPhone', {type:'tel', ph:'050-000-0000', req:true, check:phoneOk})) +
+    '</div>' +
+    '<div class="card"><div class="stack" style="gap:2px"><div class="card-title">מי מוסר את המזומן ביום האירוע?</div>' +
+    '<div class="hint">' + CASH_HINT + '</div>' +
+    '<div class="hint">עוד לא החלטתם? אפשר להשאיר ריק, נשאל שוב שבועיים לפני החתונה.</div></div>' +
+    cashFields(false) + '</div>' +
     '</div>';
+}
+
+/* ================= דף השלמה: מוסר המזומן (mode=cash) ================= */
+function viewCash(){
+  var hello = (t(S.bride) && t(S.groom)) ? esc(B()) + ' ו' + esc(G()) + ', ' : '';
+  return '<header style="padding:22px 20px 6px;display:flex;justify-content:center"><img src="__IMG_LOGO__" alt="אהבתיה" style="width:120px;height:auto;filter:invert(1) brightness(.2)"></header>' +
+    '<main style="flex:1;padding:8px 20px 28px"><div class="stack screen" style="gap:18px;padding-top:12px">' +
+    head(hello ? hello.replace(/, $/, '') + ', עוד פרט קטן' : 'עוד פרט קטן') +
+    '<div class="card"><div class="stack" style="gap:2px"><div class="card-title req">מי מוסר את המזומן ביום האירוע?</div>' +
+    '<div class="hint">' + CASH_HINT + '</div></div>' + cashFields(true) + '</div>' +
+    (!eventRecordId ? '<div class="err-box" role="alert">הקישור לא מלא. כתבו לנו בוואטסאפ ונסדר את זה.</div>' : '') +
+    (S.error ? '<div class="err-box" role="alert">' + esc(S.error) + '</div>' : '') +
+    '</div></main>';
+}
+function viewCashDone(){
+  return '<section class="done screen ' + BG + '" style="align-items:center;justify-content:center;text-align:center">' +
+    '<div class="shade" aria-hidden="true" style="background:linear-gradient(180deg,rgba(18,13,23,.75) 0%,rgba(18,13,23,.9) 45%,#120D17 100%)"></div>' +
+    '<div class="stack" style="position:relative;align-items:center;gap:16px;padding:40px 28px">' +
+      '<div style="width:92px;height:92px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 0 0 10px rgba(255,255,255,.06),0 18px 44px rgba(232,69,106,.5)">' + ICONS.check + '</div>' +
+      '<p style="margin:0;font-size:21px;line-height:1.55;font-weight:700;color:#fff">תודה! עדכנו את ' + esc(first(S.payName, '')) + ' שהוא מוסר את המעטפה למנהל הצוות בסיום סבב הריקודים הראשון 🤍</p>' +
+    '</div></section>';
 }
 
 var MM = {
@@ -458,6 +525,7 @@ function viewDone(){
 var app = document.getElementById('app');
 
 function render(){
+  if (MODE === 'cash') return renderCash();
   var step = curStep();
   if (step === 'welcome'){ app.innerHTML = viewWelcome(); return; }
   if (step === 'done'){ app.innerHTML = viewDone(); return; }
@@ -479,7 +547,16 @@ function render(){
   app.innerHTML = viewHeader() +
     '<main style="flex:1;padding:8px 20px 28px">' + body + '</main>' +
     '<div class="footer"><button type="button" class="tap btn-main" data-act="next"' + (dis ? ' disabled' : '') + '>' + label + '</button>' +
-    '<div class="missing" role="status">' + (S.triedNext && miss.length ? 'חסר: ' + esc(miss.join(', ')) : '') + '</div></div>';
+    '<div class="missing" role="status">' + (S.triedNext && miss.length ? esc(missText(miss)) : '') + '</div></div>';
+}
+
+function renderCash(){
+  if (S.cashDone){ app.innerHTML = viewCashDone(); return; }
+  var miss = missing('cash');
+  var dis = S.sending || !eventRecordId || (S.triedNext && miss.length > 0);
+  app.innerHTML = viewCash() +
+    '<div class="footer"><button type="button" class="tap btn-main" data-act="next"' + (dis ? ' disabled' : '') + '>' + (S.sending ? 'שולחים…' : 'שליחה') + '</button>' +
+    '<div class="missing" role="status">' + (S.triedNext && miss.length ? esc(missText(miss)) : '') + '</div></div>';
 }
 
 /* ================= אירועים ================= */
@@ -498,6 +575,7 @@ app.addEventListener('click', function(e){
     return render();
   }
   if (act === 'toggleProd'){ S.hasProd = !S.hasProd; return render(); }
+  if (act === 'toggleSelfPay'){ S.selfPay = !S.selfPay; return render(); }
   if (act === 'song'){ S.songs[step] = shownSongs[+el.getAttribute('data-i')]; return render(); }
   if (act === 'other'){ S.songs[step] = '__other'; render(); var o = app.querySelector('[data-other]'); if (o) o.focus(); return; }
   if (act === 'toggleAll'){ S.showAll = !S.showAll; S.query = ''; render(); if (S.showAll){ var s = app.querySelector('[data-field="query"]'); if (s) s.focus(); } return; }
@@ -506,6 +584,10 @@ app.addEventListener('click', function(e){
     var at = S.ideas.indexOf(n);
     if (at >= 0) S.ideas.splice(at, 1); else S.ideas.push(n);
     return render();
+  }
+  if (act === 'next' && MODE === 'cash'){
+    if (missing('cash').length){ S.triedNext = true; render(); var b2 = app.querySelector('.f-in.err'); if (b2) b2.focus(); return; }
+    return submitCash();
   }
   if (act === 'next'){
     if (missing(step).length){ S.triedNext = true; render(); var bad = app.querySelector('.f-in.err'); if (bad) bad.focus(); return; }
@@ -553,6 +635,10 @@ function payload(){
     djPhone: (S.pkg === 'chuppah' && !systemDj && t(S.dj)) ? t(S.djPhone) : '',
     bridePhone: t(S.bridePhone), groomPhone: t(S.groomPhone),
     payerName: payerName, payerPhone: t(payerPhone),
+    selfPay: S.selfPay ? 'כן' : 'לא',
+    payContactName: S.selfPay ? '' : t(S.payContactName),
+    payContactRelation: S.selfPay ? '' : t(S.payContactRelation),
+    payContactPhone: S.selfPay ? '' : t(S.payContactPhone),
     songVeil: song('veil'), songBracha: song('bracha'), songEntrance: song('entrance'), songGlass: song('glass'), songEnding: song('ending'),
     glassPause: S.pause, escortToYichud: S.yichud,
     notes: t(S.notes),
@@ -571,8 +657,33 @@ function submit(){
   var data = payload();
   var body = new URLSearchParams();
   Object.keys(data).forEach(function(k){ body.append(k, data[k] == null ? '' : String(data[k])); });
+  // אנשי הקשר לתשלום נשלחים גם ל-Webhook הנפרד, שמעדכן ישירות את האירוע
+  var pay = new URLSearchParams();
+  pay.append('source', 'form');
+  ['eventRecordId','selfPay','payContactName','payContactRelation','payContactPhone','payerName','payerPhone','brideName','groomName'].forEach(function(k){ pay.append(k, data[k] == null ? '' : String(data[k])); });
+  fetch(PAY_WEBHOOK_URL, { method:'POST', mode:'no-cors', body: pay }).catch(function(){});
   fetch(WEBHOOK_URL, { method:'POST', mode:'no-cors', body: body })
     .then(function(){ S.sending = false; go(STEPS.indexOf('done')); })
+    .catch(function(){
+      S.sending = false;
+      S.error = 'משהו השתבש בשליחה. בדקו שיש חיבור לאינטרנט ונסו שוב. אם זה חוזר, כתבו לנו בוואטסאפ.';
+      render();
+    });
+}
+
+function submitCash(){
+  if (S.sending || !eventRecordId) return;
+  S.sending = true; S.error = ''; render();
+  if (!LIVE){ setTimeout(function(){ S.sending = false; S.cashDone = true; render(); }, 600); return; }
+  var body = new URLSearchParams();
+  body.append('source', 'cash');
+  body.append('eventRecordId', eventRecordId);
+  body.append('payerName', t(S.payName));
+  body.append('payerPhone', t(S.payPhone));
+  body.append('brideName', t(S.bride));
+  body.append('groomName', t(S.groom));
+  fetch(PAY_WEBHOOK_URL, { method:'POST', mode:'no-cors', body: body })
+    .then(function(){ S.sending = false; S.cashDone = true; render(); window.scrollTo(0, 0); })
     .catch(function(){
       S.sending = false;
       S.error = 'משהו השתבש בשליחה. בדקו שיש חיבור לאינטרנט ונסו שוב. אם זה חוזר, כתבו לנו בוואטסאפ.';
