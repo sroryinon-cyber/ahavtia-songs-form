@@ -194,6 +194,7 @@ function missing(step){
   if (MOMENTS.indexOf(step) >= 0){
     var sel = S.songs[step];
     if (!sel || (sel === '__other' && !t(S.other[step]))) m.push('שיר');
+    if (step === 'glass' && sel !== NONE && !S.pause) m.push('איך השיר יתנגן');
   }
   return m;
 }
@@ -403,7 +404,7 @@ function viewMoment(step){
         (oOn ? '<div style="padding:0 14px 14px"><input class="f-in" type="text" data-other="' + step + '" aria-label="שם השיר והאמן" placeholder="שם השיר והאמן" value="' + esc(S.other[step]) + '"></div>' : '') +
       '</div></div>' +
     (more > 0 ? '<button type="button" class="tap link-btn" data-act="toggleAll">' + (S.showAll ? 'הצגת פחות שירים' : 'עוד ' + more + ' שירים ברשימה') + '</button>' : '') +
-    (step === 'glass' ? '<div class="stack" style="gap:10px;padding-top:6px"><div class="card-title">איך השיר יתנגן?</div>' + pills2('pause', [{id:'עם עצירה',label:'עם עצירה לפני הפזמון'},{id:'בלי עצירה',label:'ברצף, בלי עצירה'}]) + '</div>' : '') +
+    (step === 'glass' ? '<div class="stack" style="gap:10px;padding-top:6px"><div class="card-title req">איך השיר יתנגן?</div>' + pills2('pause', [{id:'עם עצירה',label:'עם עצירה לפני הפזמון'},{id:'בלי עצירה',label:'ברצף, בלי עצירה'}]) + '</div>' : '') +
     (step === 'ending' ? '<div class="stack" style="gap:10px;padding-top:6px"><div class="card-title">נלווה אתכם בנגינה לחדר הייחוד?</div>' + pills2('yichud', [{id:'כן',label:'כן, נשמח'},{id:'לא',label:'לא צריך'}]) + '</div>' : '') +
     '</div>';
 }
